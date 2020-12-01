@@ -1,0 +1,77 @@
+# vim:set ft=sh:
+
+alias cp='cp -i'
+alias ln='ln -i'
+alias mv='mv -i'
+alias rm='rm -i'
+alias ls='ls -v --color --group-directories-first'
+alias ll='ls -l'
+alias h='history'
+alias j='jobs -l'
+alias c='clear'
+alias ..='cd ..'
+alias grep='grep --color=auto'
+alias md='mkdir -p'
+alias reload=". ~/.aliases"
+alias path='echo -e ${PATH//:/\\n}'
+alias rpm-tree='mkdir -p ./BUILD ./RPMS ./SOURCES ./SPECS ./SRPMS'
+alias sql+="rlwrap --history-filename ~/.oracle/history sqlplus64"
+alias stopwatch='time read'
+alias tmux='tmux -2'
+alias gc='git clone'
+alias py="~/.pyenv/bin/python"
+
+? () { echo "$*" | bc -l; }
+
+ytdl () {
+    youtube-dl -o '%(title)s.f%(format_id)s.%(ext)s' $*
+
+}
+
+rdp() {
+    xfreerdp /smart-sizing:3840x2100 /size:1600x900 /drive:share,/home/dxm/Public $*
+}
+
+wcfind() {
+    find ${1:-"."} -type f -print0 | wc -l --files0-from=-
+}
+
+qvdl() {
+    quvi -v mute "$1" --exec "curl -LO %u"
+}
+
+ssl-info() {
+    openssl x509 -text -in $1
+}
+
+ssl-dump() {
+    echo | openssl s_client -connect $*
+}
+
+cpdots() {
+    DOTFILES="${1:-$HOME/Projects/personal/dotfiles}"
+    if [ -d $DOTFILES ];then
+        for f in $DOTFILES/*;do
+            n=${f##*/}
+            \cp -f -v $f $HOME/.$n
+        done
+    fi
+}
+
+pyweb() {
+    command -v python3 > /dev/null 2>&1
+    if [ $? = 0 ];then
+        python3 -m http.server ${1:-"8080"}
+    else
+        python -m SimpleHTTPServer ${1:-"8080"}
+    fi
+}
+
+pushpath () {
+    case ":${PATH}:" in
+        *:"$1":*)
+            ;;
+        *)
+            PATH=$1:$PATH
+    esac
+}
