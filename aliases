@@ -20,12 +20,17 @@ alias stopwatch='time read'
 alias tmux='tmux -2'
 alias gc='git clone'
 alias py="~/.pyenv/bin/python"
+alias srm='shred -uvz'
 
 ? () { echo "$*" | bc -l; }
 
 ytdl () {
     youtube-dl -o '%(title)s.f%(format_id)s.%(ext)s' $*
 
+}
+
+qvdl() {
+    quvi -v mute "$1" --exec "curl -LO %u"
 }
 
 rdp() {
@@ -36,24 +41,23 @@ wcfind() {
     find ${1:-"."} -type f -print0 | wc -l --files0-from=-
 }
 
-qvdl() {
-    quvi -v mute "$1" --exec "curl -LO %u"
-}
 
-ssl-info() {
+cert-info() {
     openssl x509 -text -in $1
 }
 
-ssl-dump() {
+cert-dump() {
     echo | openssl s_client -connect $*
 }
 
 cpdots() {
     DOTFILES="${1:-$HOME/Projects/personal/dotfiles}"
     if [ -d $DOTFILES ];then
-        for f in $DOTFILES/*;do
-            n=${f##*/}
-            \cp -f -v $f $HOME/.$n
+        for i in $DOTFILES/*;do
+            if [ -f $i ];then
+                n=${i##*/}
+                \cp -f -v $i $HOME/.$n
+            fi
         done
     fi
 }

@@ -1,5 +1,3 @@
-" .vimrc
-
 set nocompatible
 
 syntax on
