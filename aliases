@@ -78,4 +78,24 @@ pushpath () {
     esac
 }
 
+mkpy3() {
+    if [ $# -lt 1 ];then
+        echo "mkpy3 VENV [ROOT]"
+        return
+    fi
+
+    VENV_NAME=$1
+    VENV_ROOT="${2:-$HOME/.pyenvs}"
+    VENV_PATH=$VENV_ROOT/$VENV_NAME
+
+    if [ -d $VENV_PATH ];then
+        echo "$VENV_PATH exists, please remove first"
+        return
+    fi
+
+    python3 -m venv $VENV_PATH
+    $VENV_PATH/bin/pip install --no-binary :all: --upgrade pip
+
+}
+
 # vim:set ft=sh:
