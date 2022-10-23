@@ -2,8 +2,8 @@ if [ -f /etc/bashrc ]; then
     . /etc/bashrc
 fi
 
-if [ -f $HOME/.aliases ]; then
-    . $HOME/.aliases
+if [ -f ~/.aliases ]; then
+    . ~/.aliases
 fi
 
 umask 022
