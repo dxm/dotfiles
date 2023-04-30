@@ -26,12 +26,13 @@ alias dfd='diff -bur $*'
 
 ? () { echo "$*" | bc -l; }
 
-ytdl () {
-    youtube-dl -o '%(title)s.f%(format_id)s.%(ext)s' $*
+ytdl() {
+    yt-dlp --output '%(title)s.f%(format_id)s.%(ext)s' $*
 }
 
-qvdl() {
-    quvi -v mute "$1" --exec "curl -LO %u"
+ytdl-mp3() {
+    ytdl --audio-format mp3 --audio-quality 0 --format bestaudio $*
+
 }
 
 rdp4k() {
@@ -51,7 +52,7 @@ cert-dump() {
 }
 
 cpdots() {
-    DOTFILES="${1:-$HOME/Projects/personal/dotfiles}"
+    DOTFILES="${1:-$HOME/Projects/dotfiles}"
     if [ -d $DOTFILES ];then
         for i in $DOTFILES/*;do
             if [ -f $i ];then
