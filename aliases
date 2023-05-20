@@ -31,7 +31,7 @@ ytdl() {
 }
 
 ytdl-mp3() {
-    ytdl --audio-format mp3 --audio-quality 0 --format bestaudio $*
+    ytdl --extract-audio --audio-format mp3 --audio-quality 0 --format bestaudio $*
 
 }
 

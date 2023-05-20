@@ -1,12 +1,8 @@
-set nocompatible
 set incsearch
 set smartcase
 set hlsearch
 set smartcase
-"set ttyfast
 set history=10000
-"set redrawtime=10000
-"set re=0
 
 set autoindent
 set smartindent
@@ -38,7 +34,5 @@ set t_Co=256
 set background=dark
 set textwidth=72
 colorscheme default
-"syntax sync minlines=300
-"syntax on
 autocmd BufEnter * :syntax sync fromstart
 filetype plugin indent on
