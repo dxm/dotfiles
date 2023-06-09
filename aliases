@@ -51,12 +51,14 @@ cert-dump() {
     echo | openssl s_client -connect $*
 }
 
+# test?
+#
 cpdots() {
     DOTFILES="${1:-$HOME/Projects/dotfiles}"
     if [ -d $DOTFILES ];then
         for i in $DOTFILES/*;do
-            if [ -f $i ];then
-                n=${i##*/}
+            n=${i##*/}
+            if [ -f $i  ];then
                 \cp -f -v $i $HOME/.$n
             fi
         done
