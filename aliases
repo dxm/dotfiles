@@ -35,6 +35,11 @@ ytdl-mp3() {
 
 }
 
+ytdl-mp4() {
+    ytdl --format mp4 $*
+
+}
+
 rdp4k() {
     xfreerdp /smart-sizing:3840x2100 /size:1600x900 /drive:share,/home/dxm/Public $*
 }
