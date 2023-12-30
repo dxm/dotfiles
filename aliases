@@ -56,8 +56,6 @@ cert-dump() {
     echo | openssl s_client -connect $*
 }
 
-# test?
-#
 cpdots() {
     DOTFILES="${1:-$HOME/Projects/dotfiles}"
     if [ -d $DOTFILES ];then
