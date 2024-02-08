@@ -17,7 +17,5 @@ export HISTSIZE=100000
 export HISTTIMEFORMAT='%F %T '
 export PYTHONSTARTUP=~/.pythonrc.py
 export LIBVIRT_DEFAULT_URI='qemu:///system'
-export PASSWORD_STORE_ENABLE_EXTENSIONS=true
-export TNS_ADMIN=~/.oracle/network/admin
 export EDITOR=$(type -P vim || type -P vi)
 export PS1='[\u@\h \W]\$ '
