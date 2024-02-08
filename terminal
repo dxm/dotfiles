@@ -1,0 +1,34 @@
+# Seems to reset Terminal, deleting all profiles
+# dconf reset -f /org/gnome/terminal/legacy/profiles:/
+
+# maybe easier to just clone and run:
+# https://github.com/aruhier/gnome-terminal-colors-solarized.git
+
+#[dxm@fedora dotfiles]$ gsettings get org.gnome.Terminal.ProfilesList list 
+#['b1dcc9dd-5262-4d8d-a863-c897e6d979b9']
+#[dxm@fedora dotfiles]$ gsettings get org.gnome.Terminal.Legacy.Profile:$dconfdir/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/ visible-name
+#'Unnamed'
+#[dxm@fedora dotfiles]$ 
+
+# Stolen from here:
+# https://askubuntu.com/questions/906137/seriously-dconf-gconf-gsettings-how-do-i-save-my-terminal-settings
+
+if [ "$#" != 2 ];then
+    echo "terminal [export|import] FILE"
+    exit
+fi
+
+gprofile=$(gsettings get org.gnome.Terminal.ProfilesList default)
+gprofile=${gprofile:1:-1}
+gschema=org.gnome.Terminal.Legacy.Profile
+gpath=/org/gnome/terminal/legacy/profiles:/:${gprofile}/        
+
+if [ $1 == "export" ];then
+    gsettings list-recursively ${gschema}:${gpath} > $2
+elif [ $1 == "import" ];then
+    cut -f2- -d' ' $2 | while read line; do
+        key=$(echo $line | cut -f1 -d' ')
+        value=$(echo $line | cut -f2- -d' ')
+        gsettings set ${gschema}:${gpath} $key "$value"
+    done
+fi

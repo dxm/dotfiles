@@ -9,7 +9,6 @@ dotfiles = aliases \
 	pythonrc.py \
 	tclshrc \
 	tmux.conf \
-	test \
 	vimrc \
 	Xresources
 
