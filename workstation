@@ -2,7 +2,7 @@
 
 set -ef
 
-function gpgcheck() {
+function gpg_check() {
     hash=`gpg --batch  --with-colons --show-keys --with-fingerprint "$1" \
         | awk -F: '/^fpr/ { print $10 }'` 
 
@@ -13,15 +13,18 @@ function gpgcheck() {
     fi
 }
 
-function importkey() {
-    tempkey=`mktemp`
-    curl --silent --location --output "$tempkey" "$1"
-    if ! `gpgcheck "$tempkey" "$2"`;then
-        echo failed
+function import_key() {
+    if ! `gpg_check "$1" "$2"`;then
         return 1
     else
-        sudo rpmkeys --import "$tempkey"
+        sudo rpmkeys --import "$1"
     fi
+}
+
+function import_key_url() {
+    tempkey=`mktemp`
+    curl --silent --location --output "$tempkey" "$1"
+    import_key "$tempkey" "$2"
     rm "$tempkey"
 }
 
@@ -34,6 +37,8 @@ function set_cdrom() {
 function set_gsettings() {
     gsettings set org.gnome.desktop.interface clock-format '12h'
     gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']" 
+    #gsettings set org.gnome.settings-daemon.plugins.power active false
+    gsettings set org.gnome.settings-daemon.plugins.power ambient-enabled false
 }
 
 function pkg_tools() {
@@ -51,8 +56,8 @@ function pkg_devel() {
 
 function pkg_desktop() {
     sudo dnf install --setopt=install_weak_deps=False \
-        brasero chromium firefox-wayland gnome-epub-thumbnailer \
-        gnome-extensions-app gnome-tweak-tool xfreerdp yt-dlp
+        brasero gnome-epub-thumbnailer  gnome-extensions-app \
+        gnome-tweak-tool xfreerdp yt-dlp
 }
 
 function pkg_multimedia() {
@@ -63,14 +68,15 @@ function pkg_multimedia() {
         ffmpeg ffmpeg-devel
 }
 
+import_key /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-39-primary 'E8F23996F23218640CB44CBE75CF5AC418B8E74C'
 pkg_tools
 pkg_devel
 pkg_desktop
 set_cdrom
 set_gsettings
-importkey 'https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-free-fedora-2020' 'E9A491A3DE247814E7E067EAE06F8ECDD651FF2E'
-importkey 'https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-nonfree-fedora-2020' '79BDB88F9BBF73910FD4095B6A2AF96194843C65'
-sudo dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-sudo dnf install https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-sudo dnf config-manager --enable fedora-cisco-openh264
-pkg_multimedia
+#import_key 'https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-free-fedora-2020' 'E9A491A3DE247814E7E067EAE06F8ECDD651FF2E'
+#import_key 'https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-nonfree-fedora-2020' '79BDB88F9BBF73910FD4095B6A2AF96194843C65'
+#sudo dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+#sudo dnf install https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+#sudo dnf config-manager --enable fedora-cisco-openh264
+#pkg_multimedia
