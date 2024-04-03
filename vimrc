@@ -19,6 +19,7 @@ set winminheight=0
 set colorcolumn=+1
 set textwidth=72
 set numberwidth=5
+set nowrap
 set number
 
 set sh=/bin/bash

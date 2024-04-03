@@ -4,7 +4,6 @@ USER := $(echo $$USER)
 dotfiles = aliases \
 	bash_profile \
 	bashrc \
-	curlrc \
 	gitconfig \
 	pythonrc.py \
 	tclshrc \

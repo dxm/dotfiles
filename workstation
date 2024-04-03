@@ -60,6 +60,15 @@ function pkg_desktop() {
         gnome-tweak-tool xfreerdp yt-dlp
 }
 
+# NOTE: This seems to allow most videoes to play in firefox without
+# ffmpeg from rpmfusion. Youtube, reddit, crunchyroll, netflix seem to
+# work. Maybe decide to use container for ffmepg scripts and leave
+# rpmfusion out?
+function pkg_multimedia_h264() {
+    sudo dnf install --setopt=install_weak_deps=False \
+        gstreamer1-plugin-openh264 mozilla-openh264
+}
+
 function pkg_multimedia() {
     sudo dnf install --setopt=install_weak_deps=False --allowerasing \
         --exclude=gstreamer1-plugins-bad-free-devel \
@@ -68,11 +77,19 @@ function pkg_multimedia() {
         ffmpeg ffmpeg-devel
 }
 
+setup_libvirt() {
+    username="`whoami`"
+    sudo usermod -aG libvirt "$username"
+    sudo dnf install --setopt=install_weak_deps=False \
+        python3-libvirt python3-invoke
+}
+
 import_key /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-39-primary 'E8F23996F23218640CB44CBE75CF5AC418B8E74C'
 pkg_tools
 pkg_devel
 pkg_desktop
 set_cdrom
+pkg_multimedia_h264
 set_gsettings
 #import_key 'https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-free-fedora-2020' 'E9A491A3DE247814E7E067EAE06F8ECDD651FF2E'
 #import_key 'https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-nonfree-fedora-2020' '79BDB88F9BBF73910FD4095B6A2AF96194843C65'
