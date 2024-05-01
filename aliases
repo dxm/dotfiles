@@ -54,19 +54,20 @@ cert-dump() {
     echo | openssl s_client -connect $*
 }
 
-cpdots() {
-    DOTFILES="${1:-$HOME/Projects/dotfiles}"
-    if [ -d $DOTFILES ];then
-        for i in $DOTFILES/*;do
-            n=${i##*/}
-            if [ -f $i  ];then
-                \cp -f -v $i $HOME/.$n
-            fi
-        done
-    else
-        echo "$DOTFILES does not exist"
-    fi
-}
+# XXX: Moved to Makefile
+# cpdots() {
+#     DOTFILES="${1:-$HOME/Projects/dotfiles}"
+#     if [ -d $DOTFILES ];then
+#         for i in $DOTFILES/*;do
+#             n=${i##*/}
+#             if [ -f $i  ];then
+#                 \cp -f -v $i $HOME/.$n
+#             fi
+#         done
+#     else
+#         echo "$DOTFILES does not exist"
+#     fi
+# }
 
 pyweb() {
     command -v python3 > /dev/null 2>&1
