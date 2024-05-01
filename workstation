@@ -84,7 +84,13 @@ setup_libvirt() {
         python3-libvirt python3-invoke
 }
 
-import_key /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-39-primary 'E8F23996F23218640CB44CBE75CF5AC418B8E74C'
+VERSION_ID=`grep '^VERSION_ID' /etc/os-release |cut -f2 -d=`
+if [ $VERSION_ID = 40 ];then
+    HASH=115DF9AEF857853EE8445D0A0727707EA15B79CC
+elif [ $VERSION_ID = 39];then
+    HASH=E8F23996F23218640CB44CBE75CF5AC418B8E74C
+fi
+import_key /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-${VERSION_ID}-primary $HASH
 pkg_tools
 pkg_devel
 pkg_desktop
