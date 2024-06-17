@@ -37,3 +37,4 @@ set textwidth=72
 colorscheme default
 autocmd BufEnter * :syntax sync fromstart
 filetype plugin indent on
+syntax on
