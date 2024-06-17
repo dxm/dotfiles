@@ -1,9 +1,15 @@
-if [ -f /etc/bashrc ]; then
-    . /etc/bashrc
-fi
+case $- in
+    *i*) ;;
+      *) return;;
+esac
 
 if [ -f ~/.aliases ]; then
     . ~/.aliases
+fi
+
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
 fi
 
 umask 022
@@ -18,4 +24,5 @@ export HISTTIMEFORMAT='%F %T '
 export PYTHONSTARTUP=~/.pythonrc.py
 export LIBVIRT_DEFAULT_URI='qemu:///system'
 export EDITOR=$(type -P vim || type -P vi)
+export MOZ_ENABLE_WAYLAND=1
 export PS1='[\u@\h \W]\$ '
