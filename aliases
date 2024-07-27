@@ -13,7 +13,6 @@ alias md='mkdir -p'
 alias reload=". ~/.aliases"
 alias path='echo -e ${PATH//:/\\n}'
 alias rpm-tree='mkdir -p ./BUILD ./RPMS ./SOURCES ./SPECS ./SRPMS'
-alias sql+="rlwrap --history-filename ~/.oracle/history sqlplus64"
 alias stopwatch='time read'
 alias tmux='tmux -2'
 alias gc='git clone'
@@ -24,26 +23,17 @@ alias dfd='diff -bur $*'
 
 ? () { echo "$*" | bc -l; }
 
-ytdl() {
+yt() {
     yt-dlp --output '%(title)s.f%(format_id)s.%(ext)s' $*
 }
 
-ytdl-mp3() {
-    ytdl --extract-audio --audio-format mp3 --audio-quality 0 --format bestaudio $*
+yt-mp3() {
+    yt --extract-audio --audio-format mp3 --audio-quality 0 --format bestaudio $*
 
 }
 
-ytdl-mp4() {
-    ytdl --format mp4 $*
-
-}
-
-rdp4k() {
+rdp-4k() {
     xfreerdp /smart-sizing:3840x2100 /size:1600x900 /drive:share,/home/dxm/Public $*
-}
-
-wcfind() {
-    find ${1:-"."} -type f -print0 | wc -l --files0-from=-
 }
 
 cert-info() {
@@ -54,22 +44,7 @@ cert-dump() {
     echo | openssl s_client -connect $*
 }
 
-# XXX: Moved to Makefile
-# cpdots() {
-#     DOTFILES="${1:-$HOME/Projects/dotfiles}"
-#     if [ -d $DOTFILES ];then
-#         for i in $DOTFILES/*;do
-#             n=${i##*/}
-#             if [ -f $i  ];then
-#                 \cp -f -v $i $HOME/.$n
-#             fi
-#         done
-#     else
-#         echo "$DOTFILES does not exist"
-#     fi
-# }
-
-pyweb() {
+web-8080() {
     command -v python3 > /dev/null 2>&1
     if [ $? = 0 ];then
         python3 -m http.server ${1:-"8080"}
@@ -77,14 +52,3 @@ pyweb() {
         python -m SimpleHTTPServer ${1:-"8080"}
     fi
 }
-
-pushpath () {
-    case ":${PATH}:" in
-        *:"$1":*)
-            ;;
-        *)
-            PATH=$1:$PATH
-    esac
-}
-
-# vim: set ft=sh :

@@ -8,8 +8,7 @@ dotfiles = aliases \
 	pythonrc.py \
 	tclshrc \
 	tmux.conf \
-	vimrc \
-	Xresources
+	vimrc
 
 
 install-dotfiles: $(dotfiles)

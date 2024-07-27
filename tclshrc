@@ -1,5 +1,3 @@
-# vim: set ft=tcl :
-
 package require tclreadline
 
 proc ::tclreadline::prompt1 {} {

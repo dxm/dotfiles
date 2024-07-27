@@ -28,78 +28,36 @@ function import_key_url() {
     rm "$tempkey"
 }
 
-function set_cdrom() {
-    username="`whoami`"
-    sudo usermod -aG cdrom "$username"
-    sudo setcap cap_ipc_lock+pe /usr/bin/wodim
-}
-
-function set_gsettings() {
-    gsettings set org.gnome.desktop.interface clock-format '12h'
-    gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']" 
-    #gsettings set org.gnome.settings-daemon.plugins.power active false
-    gsettings set org.gnome.settings-daemon.plugins.power ambient-enabled false
-}
-
-function pkg_tools() {
-    sudo dnf install --setopt=install_weak_deps=False \
-        htop nmap openssl pwgen rlwrap smartmontools tmux tree vim-enhanced
-
-}
-
-function pkg_devel() {
-    sudo dnf install --setopt=install_weak_deps=False \
-        autoconf automake bzip2-devel expat-devel gcc gcc-c++ \
-        gdbm-devel ncurses-devel openldap-devel openssl-devel python3-devel \
-        python-devel readline-devel sqlite-devel xz-libs zlib-devel
-}
-
-function pkg_desktop() {
-    sudo dnf install --setopt=install_weak_deps=False \
-        brasero gnome-epub-thumbnailer  gnome-extensions-app \
-        gnome-tweak-tool xfreerdp yt-dlp
-}
-
-# NOTE: This seems to allow most videoes to play in firefox without
-# ffmpeg from rpmfusion. Youtube, reddit, crunchyroll, netflix seem to
-# work. Maybe decide to use container for ffmepg scripts and leave
-# rpmfusion out?
-function pkg_multimedia_h264() {
-    sudo dnf install --setopt=install_weak_deps=False \
-        gstreamer1-plugin-openh264 mozilla-openh264
-}
-
-function pkg_multimedia() {
-    sudo dnf install --setopt=install_weak_deps=False --allowerasing \
-        --exclude=gstreamer1-plugins-bad-free-devel \
-        'gstreamer1-plugins-bad-*' 'gstreamer1-plugins-good-*' \
-        gstreamer1-plugins-base gstreamer1-libav gstreamer1-plugin-openh264 \
-        ffmpeg ffmpeg-devel
-}
-
-setup_libvirt() {
-    username="`whoami`"
-    sudo usermod -aG libvirt "$username"
-    sudo dnf install --setopt=install_weak_deps=False \
-        python3-libvirt python3-invoke
-}
-
 VERSION_ID=`grep '^VERSION_ID' /etc/os-release |cut -f2 -d=`
+
 if [ $VERSION_ID = 40 ];then
     HASH=115DF9AEF857853EE8445D0A0727707EA15B79CC
+    PACKAGES=(htop nmap openssl pwgen rlwrap smartmontools tmux tree vim-enhanced p7zip dnf-utils make)
+    PACKAGES+=(brasero gnome-epub-thumbnailer gnome-extensions-app gnome-tweak-tool xfreerdp mozilla-ublock-origin)
+    PACKAGES+=(gstreamer1-plugin-openh264 mozilla-openh264)
+    PACKAGES+=(virt-manager virt-install python3-libvirt guestfs-tools)
+    # TODO: Move to container or VM
+    # yt-dlp autoconf automake bzip2-devel expat-devel gcc gcc-c++
+    # gdbm-devel ncurses-devel openldap-devel openssl-devel python3-devel
+    # python-devel readline-devel sqlite-devel xz-libs zlib-devel
+
 elif [ $VERSION_ID = 39];then
     HASH=E8F23996F23218640CB44CBE75CF5AC418B8E74C
+    PACKAGES=(htop nmap openssl pwgen rlwrap smartmontools tmux tree vim-enhanced p7zip dnf-utils)
+    PACKAGES+=(brasero gnome-epub-thumbnailer  gnome-extensions-app gnome-tweak-tool xfreerdp yt-dlp mozilla-ublock-origin)
+    PACKAGES+=(gstreamer1-plugin-openh264 mozilla-openh264)
 fi
+
+username="`whoami`"
 import_key /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-${VERSION_ID}-primary $HASH
-pkg_tools
-pkg_devel
-pkg_desktop
-set_cdrom
-pkg_multimedia_h264
-set_gsettings
-#import_key 'https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-free-fedora-2020' 'E9A491A3DE247814E7E067EAE06F8ECDD651FF2E'
-#import_key 'https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-nonfree-fedora-2020' '79BDB88F9BBF73910FD4095B6A2AF96194843C65'
-#sudo dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-#sudo dnf install https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-#sudo dnf config-manager --enable fedora-cisco-openh264
-#pkg_multimedia
+sudo dnf install --setopt=install_weak_deps=False ${PACKAGES[*]}
+sudo usermod -aG cdrom "$username"
+sudo usermod -aG libvirt "$username"
+# TODO: Needed in 39, need to validate again
+sudo setcap cap_ipc_lock+pe /usr/bin/wodim
+gsettings set org.gnome.desktop.interface clock-format '12h'
+gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']" 
+gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'
+gsettings set org.gnome.desktop.interface show-battery-percentage true
+gsettings set org.gnome.settings-daemon.plugins.power ambient-enabled false
+gsettings set org.gnome.desktop.privacy remember-recent-files false

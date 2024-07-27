@@ -1,13 +1,3 @@
-case $- in
-    *i*) ;;
-      *) return;;
-esac
-
-
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-fi
-
 if [ -f ~/.aliases ]; then
     . ~/.aliases
 fi
@@ -24,5 +14,4 @@ export HISTTIMEFORMAT='%F %T '
 export PYTHONSTARTUP=~/.pythonrc.py
 export LIBVIRT_DEFAULT_URI='qemu:///system'
 export EDITOR=$(type -P vim || type -P vi)
-export MOZ_ENABLE_WAYLAND=1
 export PS1='[\u@\h \W]\$ '

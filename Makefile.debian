@@ -1,0 +1,18 @@
+CURDIR ?= $(. CURDIR)
+USER := $(echo $$USER)
+
+PKG_INSTALL := sudo apt-get install --no-install-recommends --no-install-suggests
+
+PACKAGES := gnome-core network-manager-gnome libblockdev-crypto2 fonts-jetbrains-mono libgdk-pixbuf2.0-bin cheese eject
+PACKAGES += ffmpeg libavcodec-extra gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3  gstreamer1.0-pulseaudio
+PACKAGES += firefox-esr webext-ublock-origin-firefox
+PACKAGES += rsync git vim-nox yt-dlp make curl unzip qemu-system
+
+all: pkg-install ${HOME}/.local/share/applications/firefox-esr.desktop
+
+pkg-install: 
+	$(PKG_INSTALL) $(PACKAGES)
+
+${HOME}/.local/share/applications/firefox-esr.desktop:
+	sed -e 's/^Exec=/Exec=env MOZ_ENABLE_WAYLAND=1 /' /usr/share/applications/firefox-esr.desktop > $@
+
