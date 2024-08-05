@@ -28,32 +28,31 @@ function import_key_url() {
     rm "$tempkey"
 }
 
+PACKAGES=(
+    htop nmap openssl pwgen rlwrap smartmontools tmux tree vim-enhanced
+    p7zip dnf-utils make unrar brasero gnome-epub-thumbnailer
+    gnome-extensions-app gnome-tweak-tool xfreerdp mozilla-ublock-origin
+    gstreamer1-plugin-openh264 mozilla-openh264 virt-manager
+    virt-install python3-libvirt guestfs-tools
+    # yt-dlp autoconf automake bzip2-devel expat-devel gcc gcc-c++
+    # gdbm-devel ncurses-devel openldap-devel openssl-devel
+    # python3-devel python-devel readline-devel sqlite-devel xz-libs
+    # zlib-devel
+)
 VERSION_ID=`grep '^VERSION_ID' /etc/os-release |cut -f2 -d=`
+USERNAME="`whoami`"
 
 if [ $VERSION_ID = 40 ];then
     HASH=115DF9AEF857853EE8445D0A0727707EA15B79CC
-    PACKAGES=(htop nmap openssl pwgen rlwrap smartmontools tmux tree vim-enhanced p7zip dnf-utils make)
-    PACKAGES+=(brasero gnome-epub-thumbnailer gnome-extensions-app gnome-tweak-tool xfreerdp mozilla-ublock-origin)
-    PACKAGES+=(gstreamer1-plugin-openh264 mozilla-openh264)
-    PACKAGES+=(virt-manager virt-install python3-libvirt guestfs-tools)
-    # TODO: Move to container or VM
-    # yt-dlp autoconf automake bzip2-devel expat-devel gcc gcc-c++
-    # gdbm-devel ncurses-devel openldap-devel openssl-devel python3-devel
-    # python-devel readline-devel sqlite-devel xz-libs zlib-devel
-
 elif [ $VERSION_ID = 39];then
     HASH=E8F23996F23218640CB44CBE75CF5AC418B8E74C
-    PACKAGES=(htop nmap openssl pwgen rlwrap smartmontools tmux tree vim-enhanced p7zip dnf-utils)
-    PACKAGES+=(brasero gnome-epub-thumbnailer  gnome-extensions-app gnome-tweak-tool xfreerdp yt-dlp mozilla-ublock-origin)
-    PACKAGES+=(gstreamer1-plugin-openh264 mozilla-openh264)
 fi
 
-username="`whoami`"
 import_key /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-${VERSION_ID}-primary $HASH
 sudo dnf install --setopt=install_weak_deps=False ${PACKAGES[*]}
-sudo usermod -aG cdrom "$username"
-sudo usermod -aG libvirt "$username"
-# TODO: Needed in 39, need to validate again
+sudo usermod -aG cdrom "$USERNAME"
+sudo usermod -aG libvirt "$USERNAME"
+# required in 39
 sudo setcap cap_ipc_lock+pe /usr/bin/wodim
 gsettings set org.gnome.desktop.interface clock-format '12h'
 gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']" 
