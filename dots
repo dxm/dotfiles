@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -ef
+
+ROOTPATH="$(dirname $(readlink -fm "$0"))"
+SOURCE="$ROOTPATH"
+TARGET="$HOME"
+
+DOTFILES=(aliases bash_profile bashrc gitconfig pythonrc.py tclshrc tmux.conf vimrc)
+for f in ${DOTFILES[*]};do
+    cp -v -f "$SOURCE/$f" "$TARGET/.$f"
+done
