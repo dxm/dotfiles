@@ -1,34 +1,40 @@
-# Seems to reset Terminal, deleting all profiles
-# dconf reset -f /org/gnome/terminal/legacy/profiles:/
+#!/bin/sh
 
-# maybe easier to just clone and run:
-# https://github.com/aruhier/gnome-terminal-colors-solarized.git
+path="org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/"
 
-#[dxm@fedora dotfiles]$ gsettings get org.gnome.Terminal.ProfilesList list 
-#['b1dcc9dd-5262-4d8d-a863-c897e6d979b9']
-#[dxm@fedora dotfiles]$ gsettings get org.gnome.Terminal.Legacy.Profile:$dconfdir/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/ visible-name
-#'Unnamed'
-#[dxm@fedora dotfiles]$ 
-
-# Stolen from here:
-# https://askubuntu.com/questions/906137/seriously-dconf-gconf-gsettings-how-do-i-save-my-terminal-settings
-
-if [ "$#" != 2 ];then
-    echo "terminal [export|import] FILE"
+if [ $# -lt 1 ];then
+    echo "terminal name [file]"
     exit
 fi
 
-gprofile=$(gsettings get org.gnome.Terminal.ProfilesList default)
-gprofile=${gprofile:1:-1}
-gschema=org.gnome.Terminal.Legacy.Profile
-gpath=/org/gnome/terminal/legacy/profiles:/:${gprofile}/        
+for i in `gsettings get org.gnome.Terminal.ProfilesList list | tr -d "[]',"`;do
+    j=`gsettings get $path:$i/ visible-name | tr -d "'"`
+    if [ "$1" == "$j" ];then
+        uuid="$i"
+        name="$j"
+    fi
+done
 
-if [ $1 == "export" ];then
-    gsettings list-recursively ${gschema}:${gpath} > $2
-elif [ $1 == "import" ];then
+if [ $# -eq 1 -a ! -z "$uuid" ];then
+    echo "dump"
+    gsettings list-recursively $path:$uuid/
+elif [ $# -eq 2 -a ! -z "$uuid"]; then
+    echo "existing"
     cut -f2- -d' ' $2 | while read line; do
         key=$(echo $line | cut -f1 -d' ')
         value=$(echo $line | cut -f2- -d' ')
-        gsettings set ${gschema}:${gpath} $key "$value"
+        gsettings set ${path}:${uuid}/ $key "$value"
+    done
+elif [ $# -eq 2 -a -z "$uuid"]; then
+    uuid=`uuidgen`
+    name="$1"
+    echo "$name $uuid"
+    echo gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$uuid/ visible-name "'$name'"
+    gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$uuid/ visible-name "'$name'"
+    cut -f2- -d' ' $2 | while read line; do
+        key=$(echo $line | cut -f1 -d' ')
+        value=$(echo $line | cut -f2- -d' ')
+        gsettings set ${path}:${uuid}/ $key "$value"
     done
 fi
+

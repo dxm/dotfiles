@@ -44,5 +44,4 @@ org.gnome.Terminal.Legacy.Profile use-custom-command false
 org.gnome.Terminal.Legacy.Profile use-system-font false
 org.gnome.Terminal.Legacy.Profile use-theme-colors false
 org.gnome.Terminal.Legacy.Profile use-transparent-background false
-org.gnome.Terminal.Legacy.Profile visible-name 'Unnamed'
 org.gnome.Terminal.Legacy.Profile word-char-exceptions @ms nothing
