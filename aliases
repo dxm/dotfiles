@@ -44,11 +44,7 @@ cert-dump() {
     echo | openssl s_client -connect $*
 }
 
-web-8080() {
-    command -v python3 > /dev/null 2>&1
-    if [ $? = 0 ];then
-        python3 -m http.server ${1:-"8080"}
-    else
-        python -m SimpleHTTPServer ${1:-"8080"}
-    fi
+pyweb() {
+    echo "Primary IP: $(hostname -I)"
+    python3 -m http.server ${1:-"8000"}
 }
