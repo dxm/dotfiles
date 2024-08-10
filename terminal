@@ -1,40 +1,36 @@
 #!/bin/sh
 
-path="org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/"
+set -ef
 
-if [ $# -lt 1 ];then
-    echo "terminal name [file]"
-    exit
-fi
+# to dump a profile:
+# gsettings list-recursively $schema:$uuid/
 
-for i in `gsettings get org.gnome.Terminal.ProfilesList list | tr -d "[]',"`;do
-    j=`gsettings get $path:$i/ visible-name | tr -d "'"`
-    if [ "$1" == "$j" ];then
+rootpath="$(dirname $(readlink -fm "$0"))"
+schema="org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/"
+profiles="$(gsettings get org.gnome.Terminal.ProfilesList list | tr -d "[]',")"
+
+name="Dark"
+path="${rootpath}/dark.txt"
+
+for i in ${profiles[*]};do
+    # just use jq?
+    j="$(gsettings get $schema:$i/ visible-name | tr -d "'")"
+    if [ "$j" == "$name" ];then
         uuid="$i"
         name="$j"
     fi
 done
-
-if [ $# -eq 1 -a ! -z "$uuid" ];then
-    echo "dump"
-    gsettings list-recursively $path:$uuid/
-elif [ $# -eq 2 -a ! -z "$uuid"]; then
-    echo "existing"
-    cut -f2- -d' ' $2 | while read line; do
-        key=$(echo $line | cut -f1 -d' ')
-        value=$(echo $line | cut -f2- -d' ')
-        gsettings set ${path}:${uuid}/ $key "$value"
-    done
-elif [ $# -eq 2 -a -z "$uuid"]; then
+ 
+if [ -z "$uuid" ]; then
     uuid=`uuidgen`
-    name="$1"
-    echo "$name $uuid"
-    echo gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$uuid/ visible-name "'$name'"
-    gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$uuid/ visible-name "'$name'"
-    cut -f2- -d' ' $2 | while read line; do
-        key=$(echo $line | cut -f1 -d' ')
-        value=$(echo $line | cut -f2- -d' ')
-        gsettings set ${path}:${uuid}/ $key "$value"
-    done
+    profiles=$(echo -n $profiles $uuid | jq -R -s -c 'split(" ")')
+    gsettings set org.gnome.Terminal.ProfilesList list "$profiles"
+    gsettings set $schema:$uuid/ visible-name "$name"
 fi
+
+cut -f2- -d' ' "$path" | while read line; do
+    key=$(echo $line | cut -f1 -d' ')
+    value=$(echo $line | cut -f2- -d' ')
+    gsettings set ${schema}:${uuid}/ $key "$value"
+done
 
