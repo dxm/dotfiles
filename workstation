@@ -3,10 +3,9 @@
 set -ef
 
 function gpg_check() {
-    hash=`gpg --batch  --with-colons --show-keys --with-fingerprint "$1" \
-        | awk -F: '/^fpr/ { print $10 }'` 
+    hash=$(gpg --batch --with-colons --show-keys --with-fingerprint $1 | awk -F: '/^fpr/ { print $10 }') 
 
-    if [ "$hash" == "$2" ];then
+    if [ $hash == $2 ];then
         return 0
     else
         return 1
@@ -14,18 +13,18 @@ function gpg_check() {
 }
 
 function import_key() {
-    if ! `gpg_check "$1" "$2"`;then
+    if ! `gpg_check $1 $2`;then
         return 1
     else
-        sudo rpmkeys --import "$1"
+        sudo rpmkeys --import $1
     fi
 }
 
 function import_key_url() {
     tempkey=`mktemp`
-    curl --silent --location --output "$tempkey" "$1"
-    import_key "$tempkey" "$2"
-    rm "$tempkey"
+    curl --silent --location --output $tempkey "$1"
+    import_key $tempkey $2
+    rm $tempkey
 }
 
 PACKAGES=(
@@ -40,20 +39,20 @@ PACKAGES=(
     # zlib-devel
 )
 
-USERNAME="$(whoami)"
-VERSION_ID="$(grep '^VERSION_ID' /etc/os-release |cut -f2 -d=)"
+USERNAME=$(whoami)
+VERSION_ID=$(grep '^VERSION_ID' /etc/os-release |cut -f2 -d=)
 
-if [ $VERSION_ID = 40 ];then
+if [ $VERSION_ID -eq 40 ];then
     HASH=115DF9AEF857853EE8445D0A0727707EA15B79CC
-elif [ $VERSION_ID = 39];then
+elif [ $VERSION_ID -eq 39];then
     HASH=E8F23996F23218640CB44CBE75CF5AC418B8E74C
 fi
 
 set -x
 import_key /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-${VERSION_ID}-primary $HASH
 sudo dnf install --setopt=install_weak_deps=False ${PACKAGES[*]}
-sudo usermod -aG cdrom "$USERNAME"
-sudo usermod -aG libvirt "$USERNAME"
+sudo usermod -aG cdrom $USERNAME
+sudo usermod -aG libvirt $USERNAME
 # required in 39
 sudo setcap cap_ipc_lock+pe /usr/bin/wodim
 gsettings set org.gnome.desktop.interface clock-format '12h'

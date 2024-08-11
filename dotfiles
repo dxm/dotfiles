@@ -2,11 +2,9 @@
 
 set -ef
 
-ROOTPATH="$(dirname $(readlink -fm "$0"))"
-SOURCE="$ROOTPATH"
-TARGET="$HOME"
+rootpath=$(dirname $(readlink -fm $0))
+dotfiles=(aliases bash_profile bashrc gitconfig pythonrc.py tclshrc tmux.conf vimrc)
 
-DOTFILES=(aliases bash_profile bashrc gitconfig pythonrc.py tclshrc tmux.conf vimrc)
-for f in ${DOTFILES[*]};do
-    cp -v -f "$SOURCE/$f" "$TARGET/.$f"
+for f in ${dotfiles[*]};do
+    cp -v -f $rootpath/$f $HOME/.$f
 done
