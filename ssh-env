@@ -1,0 +1,7 @@
+if ! pgrep -u $USER ssh-agent > /dev/null;then
+    (umask 066;ssh-agent > ~/.ssh-agent)
+fi
+
+if [ "$SSH_AGENT_PID" = "" ];then
+    eval $(<~/.ssh-agent)
+fi
