@@ -29,9 +29,6 @@ au FileType html setl ts=2 et sw=2 sts=2 sr ai
 au FileType htmljinja setl ts=2 et sw=2 sts=2 sr ai
 au FileType yaml setl ts=2 et sw=2 sts=2 sr ai
 
-nnoremap <silent> <leader><cr> :noh<cr>
-map <leader>D :put =strftime('# %Y-%m-%d %H:%M (%a)')<cr>
-
 set t_Co=256
 set background=dark
 set textwidth=72
@@ -39,3 +36,10 @@ colorscheme default
 autocmd BufEnter * :syntax sync fromstart
 filetype plugin indent on
 syntax on
+
+nnoremap <silent> <leader><cr> :noh<cr>
+map <leader>D :put =strftime('# %Y-%m-%d %H:%M (%a)')<cr>
+
+augroup encrypt
+  au!
+augroup END

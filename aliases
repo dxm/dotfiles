@@ -23,6 +23,10 @@ alias dfd='diff -bur $*'
 
 ? () { echo "$*" | bc -l; }
 
+netls() {
+    netstat -n | awk '/^tcp/ { print $5 }'
+}
+
 yt() {
     yt-dlp --output '%(title)s.f%(format_id)s.%(ext)s' $*
 }
