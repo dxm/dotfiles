@@ -38,8 +38,12 @@ filetype plugin indent on
 syntax on
 
 nnoremap <silent> <leader><cr> :noh<cr>
-map <leader>D :put =strftime('# %Y-%m-%d %H:%M (%a)')<cr>
+nnoremap <leader>D :put =strftime('# %Y-%m-%d %H:%M (%a)')<cr>
+nnoremap <leader>pp :set paste!<cr>
+nnoremap <Leader>W :w !sudo tee % > /dev/null
 
 augroup encrypt
-  au!
+  autocmd!
+  autocmd BufRead,BufNewFile *.stxt set filetype=stxt
+  autocmd Filetype stxt setlocal viminfo= cryptmethod=blowfish2 noswapfile nobackup nowritebackup
 augroup END
