@@ -7,7 +7,7 @@ history = os.path.expanduser("~/.pyhistory")
 
 def save_history(historyPath=history):
     import readline
-    readline.write_history_file(history)
+    readline.write_history_file(historyPath)
 
 if os.path.exists(history):
     readline.set_history_length(10000)
