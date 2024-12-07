@@ -1,0 +1,44 @@
+alias cp='cp -i'
+alias ln='ln -i'
+alias mv='mv -i'
+alias rm='rm -i'
+alias ls='ls -v --literal --color=auto --group-directories-first'
+alias ll='ls -l'
+alias h='history'
+alias j='jobs -l'
+alias c='clear'
+alias ..='cd ..'
+alias grep='grep --color=auto'
+alias md='mkdir -p'
+alias reload=". ~/.aliases"
+alias path='echo -e ${PATH//:/\\n}'
+alias stopwatch='time read'
+alias tmux='tmux -2'
+alias gc='git clone'
+alias lc="tr '[A-Z]' '[a-z]'"
+alias up="tr '[a-z]' '[A-Z]'"
+alias dfd='diff -bur $*'
+
+? () { echo "$*" | bc -l; }
+
+netls() {
+    netstat -n | awk '/^tcp/ { print $5 }'
+}
+
+yt-mp3() {
+    yt-dlp --output '%(title)s.f%(format_id)s.%(ext)s' --extract-audio --audio-format mp3 --audio-quality 0 --format bestaudio $*
+
+}
+
+cert-info() {
+    openssl x509 -text -in $1
+}
+
+cert-dump() {
+    echo | openssl s_client -connect $*
+}
+
+pyweb() {
+    hostname -I | while IFS=" " read i;do echo "http://${i}:${1:-8000}"; done
+    python3 -m http.server ${1:-"8000"}
+}
