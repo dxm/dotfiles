@@ -5,9 +5,9 @@ import rlcompleter
 
 history = os.path.expanduser("~/.pyhistory")
 
-def save_history(historyPath=history):
+def save_history(path=history):
     import readline
-    readline.write_history_file(historyPath)
+    readline.write_history_file(path)
 
 if os.path.exists(history):
     readline.set_history_length(10000)

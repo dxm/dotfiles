@@ -27,7 +27,6 @@ netls() {
 
 yt-mp3() {
     yt-dlp --output '%(title)s.f%(format_id)s.%(ext)s' --extract-audio --audio-format mp3 --audio-quality 0 $*
-
 }
 
 cert-info() {

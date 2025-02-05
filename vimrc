@@ -1,3 +1,7 @@
+set nocompatible
+set nobackup
+set sh=/bin/bash
+
 set incsearch
 set ignorecase
 set smartcase
@@ -23,19 +27,14 @@ set numberwidth=5
 set nowrap
 set number
 
-set nobackup
-
-set sh=/bin/bash
+set t_Co=256
+set background=dark
 
 au FileType html setl ts=2 et sw=2 sts=2 sr ai
 au FileType htmljinja setl ts=2 et sw=2 sts=2 sr ai
 au FileType yaml setl ts=2 et sw=2 sts=2 sr ai
 
-set t_Co=256
-set background=dark
-set textwidth=72
 colorscheme default
-autocmd BufEnter * :syntax sync fromstart
 filetype plugin indent on
 syntax on
 
