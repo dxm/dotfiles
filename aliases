@@ -38,6 +38,11 @@ cert-dump() {
 }
 
 pyweb() {
-    hostname -I | while IFS=" " read i;do echo "http://${i}:${1:-8000}"; done
+    echo "http://localhost:${1:-8000}/"
     python3 -m http.server ${1:-"8000"}
+}
+
+bxweb() {
+    echo "http://localhost:${1:-8000}/"
+    busybox httpd -f -p ${1:-8000}
 }
