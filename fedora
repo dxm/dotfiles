@@ -1,0 +1,55 @@
+#!/bin/sh
+
+set -ef
+
+function gpg_check() {
+    hash=$(gpg --batch --with-colons --show-keys --with-fingerprint $1 | awk -F: '/^fpr/ { print $10 }') 
+    if [ $hash == $2 ];then
+        return
+    fi
+
+    false
+}
+
+function import_key() {
+    if `gpg_check $1 $2`;then
+        sudo rpmkeys --import $1
+        return
+    fi
+
+    false
+}
+
+USERNAME=$(whoami)
+VERSION_ID=$(grep '^VERSION_ID' /etc/os-release |cut -f2 -d=)
+PACKAGES=(
+    alacritty busybox dejavu-fonts-all discount dnf-utils entr
+    gstreamer1-plugin-openh264 guestfs-tools htop keepassxc make
+    mozilla-openh264 mozilla-ublock-origin mupdf nmap openssl pass p7zip
+    pwgen python3-libvirt rlwrap smartmontools socat sqlite3 tmux tree
+    unrar vim-enhanced virt-install virt-manager virt-top virt-viewer
+    wl-clipboard
+)
+
+if [ $VERSION_ID -eq 42 ];then
+    HASH=B0F4950458F69E1150C6C5EDC8AC4916105EF944
+elif [ $VERSION_ID -eq 43 ];then
+    HASH=C6E7F081CF80E13146676E88829B606631645531
+elif [ $VERSION_ID -eq 44 ];then
+    HASH=36F612DCF27F7D1A48A835E4DBFCF71C6D9F90A6
+else
+    echo "fedora version not recognized"
+    exit 0
+fi
+
+set -x
+
+import_key /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-${VERSION_ID}-primary $HASH
+sudo dnf install --setopt=install_weak_deps=False ${PACKAGES[*]}
+sudo usermod -aG cdrom $USERNAME
+sudo usermod -aG dialout $USERNAME
+sudo usermod -aG libvirt $USERNAME
+gsettings set org.gnome.settings-daemon.plugins.power ambient-enabled false
+gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'
+gsettings set org.gnome.desktop.interface show-battery-percentage true
+gsettings set org.gnome.desktop.privacy remember-recent-files false

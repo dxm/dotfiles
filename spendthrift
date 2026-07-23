@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+
+import calendar, csv, datetime, os, re, sys
+
+INCLUDES = (
+    '7-ELEVEN',
+    'ARCO',
+    'BEST BUY',
+    'BURGER KING',
+    'CAFE',
+    'CARLS JR',
+    'CHIPOTLE',
+    'CINEMARK',
+    'DSW',
+    'DEL TACO',
+    'EBAY',
+    'EL POLLO LOCO',
+    'GOODWILL',
+    'HABIT',
+    'IKEA',
+    'IN N OUT',
+    'JERSEY MIKES',
+    'JIMBOYS',
+    'KFC',
+    'KOBO',
+    'MARKET',
+    'MCDONALD',
+    'MEXICAN',
+    'NOODLES',
+    'PANDA EXPRESS',
+    'PANERA BREAD',
+    'RAMEN',
+    'REGAL',
+    'STEAM',
+    'SUBWAY',
+    'TACO',
+    'TERIYAKI',
+    'TOGO',
+    'UDEMY',
+    'WALMART',
+    'WENDY'
+)
+
+def hr(char='-', length=63):
+    print("%-s" % (char * (length - 1)))
+
+def scrub(description):
+    regex = re.compile(r'withdrawal\s+@\s+', flags=re.IGNORECASE)
+    return regex.sub('', description)
+
+def match(text, words):
+    for i in words:
+        if re.search(i, text, flags=re.IGNORECASE):
+            return True
+
+def read_csv(path):
+    records = []
+    with open(path) as fp:
+        reader = csv.DictReader(fp)
+        for row in reader:
+            debit = row.get('Debit')
+            action = row.get('Type')
+            description = scrub(row.get('Description'))
+            temp = row.get('Date')
+            date = datetime.datetime.strptime(temp, '%m/%d/%Y')
+            if action == 'DEBIT':
+                if debit.strip():
+                    amount = (float(debit) * -1)
+                    if match(description, INCLUDES):
+                        records.append(dict(amount=amount, description=description, date=date))
+    return records
+
+def report(records):
+    counter = 0
+    for record in sorted(records, key=lambda i:  i['date']):
+        amount = record['amount']
+        date = record['date']
+        description = record['description']
+        month = record['date'].month
+
+        if counter == 0:
+            current_month = month
+            current_total = amount
+            print('%s' % (calendar.month_name[current_month]))
+            hr()
+        else:
+            if current_month != month:
+                print('%-20s %10.2f' % ("Month total:", current_total))
+                current_month = month
+                current_total = amount
+                print('\n%s' % (calendar.month_name[current_month]))
+                hr()
+            else:
+                print("%-20s %10.2f %-.30s" % (date, amount, description))
+                current_total += amount
+
+        if counter == len(records) - 1:
+            print('%-20s %10.2f' % ("Month total:", current_total))
+
+        counter += 1
+
+if len(sys.argv) == 2 and os.path.isfile(sys.argv[1]):
+    report(read_csv(sys.argv[1]))
+else:
+    print("spendthrift FILE")

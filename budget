@@ -1,0 +1,35 @@
+#!/bin/sh
+
+if [ ! -f "$1" ];then
+    echo "budget FILE"
+    exit 0
+fi
+
+awk '
+BEGIN {
+    FS="," 
+} 
+
+{
+    if ($1 ~ /^#/) { next }
+
+    if ($1 < 0) {
+        total_expense+=$1
+        total_expense_person[$2]+=$1
+    } else {
+        total_income+=$1
+        total_income_person[$2]+=$1
+    }
+    total_person[$2]+=$1
+    total+=$1
+}
+
+END { 
+    printf "%-10s %10s %10s %10s\n", "person", "income", "expense", "net"
+    printf "-------------------------------------------\n"
+    for (person in total_person) { 
+        printf "%-10s %10.2f %10.2f %10.2f\n", person, total_income_person[person], total_expense_person[person], total_person[person]
+    }
+    printf "-------------------------------------------\n"
+    printf "%-10s %10.2f %10.2f %10.2f\n", "total:", total_income, total_expense, total
+}' "$1"

@@ -1,0 +1,21 @@
+#!/bin/sh
+
+if [ $# -lt 1 ];then
+    echo "rhel NAME [CPU] [RAM] [DISK]"
+    exit 1
+fi
+
+virt-install \
+    --name $1 \
+    --hvm \
+    --vcpus ${2:-2} \
+    --memory ${3:-2048} \
+    --disk path=/var/lib/libvirt/images/$1.img,size=${4:-20} \
+    --network network=default \
+    --graphics=none \
+    --location /var/lib/libvirt/images/rhel-10.1-x86_64-dvd.iso,kernel=images/pxeboot/vmlinuz,initrd=images/pxeboot/initrd.img \
+    --extra-args console=ttyS0 \
+    --extra-args="inst.ks=file:rhel.cfg noipv6 hostname=$1" \
+    --initrd-inject=./rhel.cfg \
+    --wait=-1 \
+    --noautoconsole &
